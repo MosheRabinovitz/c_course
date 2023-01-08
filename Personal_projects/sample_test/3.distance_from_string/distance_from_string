@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "distance_from_string.h"
+
+
+void arrange(char * arr[], int n, char * s)
+{
+	print(arr, n);
+	int length = count_letters(s);
+	
+	NodePtr hashtable[length+1];
+	for (int i = 0; i < length+1 ;++i)
+		hashtable[i] = NULL;
+	
+	for (int i = 0; i < n ;++i)
+	{
+		int hashval = count_distanse(s, length, arr[i]);
+		insert(&(hashtable[hashval]), arr[i]);
+	}
+	
+	insert_to_arr(arr, hashtable, length+1);
+}
+
+int count_letters(char * s)
+{
+	int length = 0;
+	int dup = 0;
+	
+	while (*(s+length) != '\0')
+		++length;
+	
+	for(int i = 0; i < length; ++i)
+	{
+		for (int j = i+1; j < length; ++j)
+		{
+			if (*(s+j) == *(s+i))
+			{
+				swap((s+j), (s+length -dup -1));
+				++dup;
+				j = length;
+			}
+		}
+	}
+	return length - dup;
+}
+
+int count_distanse(char * uniq_s, int n, char * word)
+{
+	int score = 0;
+	
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 0; *(word + j) != '\0'; ++j)
+		{
+			if (*(word+j) == *(uniq_s + i))
+			{
+				++score;
+				break;
+			}
+		}
+	}
+	return n - score;
+}
+
+
+void swap(char * a, char * b)
+{
+	char temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void insert(Node ** head, char * word)
+{
+	NodePtr new_node = (NodePtr) malloc(sizeof(Node));
+	new_node->word = word;
+	new_node->next = *head;
+	*head = new_node; 
+}
+
+void insert_to_arr(char * arr[], NodePtr hastable[], int n)
+{
+	int j = 0;
+	for(int i = 0; i < n; ++i)
+	{
+		install(arr, hastable[i], &j);
+	}
+}
+
+void install(char * arr[], NodePtr head, int * index)
+{
+	NodePtr temp = head;
+	while(temp)
+	{
+		arr[*index] = temp->word;
+		++(*index);
+		temp = temp->next;
+	}
+}
+void print(char * arr[], int n)
+{
+	for (int i = 0; i < n ;++i)
+	{
+		printf("%s, ", arr[i]);
+	}
+	printf("\n");
+}
